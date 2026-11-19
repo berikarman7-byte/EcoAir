@@ -1,0 +1,117 @@
+const questions = [
+    {
+        question: "Ауаны ең көп ластайтын факторлардың бірі?",
+        answers: ["Ағаштар", "Зауыт түтіні", "Жаңбыр"],
+        correct: 1
+    },
+    {
+        question: "Ауаның ластануы адамға қалай әсер етеді?",
+        answers: ["Тыныс алу ауруларын тудырады", "Күш береді", "Зияны жоқ"],
+        correct: 0
+    },
+    {
+        question: "Ауаны қорғаудың тиімді жолы?",
+        answers: ["Қоқыс жағу", "Ағаш отырғызу", "Көмір жағу"],
+        correct: 1
+    },
+    {
+        question: "Қай энергия көзі экологиялық таза?",
+        answers: ["Көмір", "Мұнай", "Күн энергиясы"],
+        correct: 2
+    },
+    {
+        question: "Көлік түтіні нені ластайды?",
+        answers: ["Суды ғана", "Ауаны", "Топырақты ғана"],
+        correct: 1
+    }
+];
+
+let currentQuestion = 0;
+let score = 0;
+
+const questionElement = document.getElementById("question");
+const answersElement = document.getElementById("answers");
+const resultElement = document.getElementById("result");
+const nextButton = document.getElementById("next");
+
+function showQuestion() {
+    const q = questions[currentQuestion];
+
+    questionElement.textContent = q.question;
+    answersElement.innerHTML = "";
+    resultElement.textContent = "";
+    nextButton.style.display = "none";
+
+    q.answers.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.textContent = answer;
+        button.className = "answer";
+
+        button.onclick = () => checkAnswer(index, button);
+
+        answersElement.appendChild(button);
+    });
+}
+
+function checkAnswer(index, selectedButton) {
+    const correct = questions[currentQuestion].correct;
+    const buttons = answersElement.querySelectorAll("button");
+
+    buttons.forEach((button, i) => {
+        button.disabled = true;
+
+        if (i === correct) {
+            button.classList.add("correct");
+        }
+    });
+
+    if (index === correct) {
+        score++;
+        resultElement.textContent = "✅ Дұрыс жауап!";
+    } else {
+        selectedButton.classList.add("wrong");
+        resultElement.textContent = "❌ Қате жауап! Дұрыс жауап жасыл түспен белгіленді.";
+    }
+
+    nextButton.style.display = "inline-block";
+}
+
+nextButton.onclick = () => {
+    currentQuestion++;
+
+    if (currentQuestion < questions.length) {
+        showQuestion();
+    } else {
+        questionElement.textContent = "Тест аяқталды! 🎉";
+        answersElement.innerHTML = "";
+        resultElement.textContent =
+            `Сенің нәтижең: ${score} / ${questions.length}`;
+        nextButton.textContent = "Қайта бастау ↻";
+        nextButton.onclick = restartQuiz;
+    }
+};
+
+function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    nextButton.textContent = "Келесі сұрақ →";
+    nextButton.onclick = () => {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            showQuestion();
+        } else {
+            finishQuiz();
+        }
+    };
+    showQuestion();
+}
+
+function finishQuiz() {
+    questionElement.textContent = "Тест аяқталды! 🎉";
+    answersElement.innerHTML = "";
+    resultElement.textContent = `Сенің нәтижең: ${score} / ${questions.length}`;
+    nextButton.textContent = "Қайта бастау ↻";
+    nextButton.onclick = restartQuiz;
+}
+
+showQuestion();
